@@ -36,7 +36,7 @@ int main() {
             // If for all a_i,  a_i - min_value >= m or max_value - a_i >= m, then we can swap any pair of elements to sort the array.
             // To swap a_i and a_j, suppose max_value - a_i >= m and max_value - a_j >= m, we can swap them through max_value. 
             // Similarly, if a_i - min_value >= m and a_j - min_value >= m, we can swap them through min_value.
-            // If max_value - a_i >= m and a_j - min_value >= m, we can do the following swaps
+            // If max_value - a_i >= m and a_j - min_value >= m, we can do the following aswaps
             // ai, max, min, aj --> max, ai, min, aj --> min, ai, max, aj --> aj, ai, max, min --> aj, max, ai, min --> aj, min, ai, max --> aj, min, max, ai.
             bool feasible = true;
             for (int i = 0; i < n; ++i) {
