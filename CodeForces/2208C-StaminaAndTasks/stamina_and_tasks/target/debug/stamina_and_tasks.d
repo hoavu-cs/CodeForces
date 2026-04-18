@@ -1,0 +1,1 @@
+/home/hoa-vu/git/CodeForces/CodeForces/2208C-StaminaAndTasks/stamina_and_tasks/target/debug/stamina_and_tasks: /home/hoa-vu/git/CodeForces/CodeForces/2208C-StaminaAndTasks/stamina_and_tasks/src/main.rs
