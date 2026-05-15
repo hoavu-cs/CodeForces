@@ -1,29 +1,100 @@
 /*
-	We want to construct q such that
-	for every i, # {j > i: p_j > p_i, q_j > q_i } = d_i.
-	Solution idea:
-		- Let's go through indices in P of numbers in the permutation in decreasing order.
-		- That is find idx(n), idx(n-1),..., idx(1)
-		- For every such idx(k), we check that d[idx(k)] must be at least the number of elements larger
-		than k to the right of idx(k) in P. If not, output -1 (FAIL).
-		- Assume we never FAIL: start at idx(n), we put it in an array perm = [idx(n)]
-		- Perm stores the ordering of the output for the indices in q
-		- For example, if q =  [2, 3, 1, 5, 4], then perm = [idx(1), idx(2),idx(3),idx(4),idx(5)]
-														= [3, 1, 2, 5, 4]
-		- When we process element at idx(k), we need to make sure that element at idx(k) is smaller than exactly d[idx(k)]
-		elements in perms that are to the right of it in p.
-		We can insert into perm d[idx(k)] from the right.
-		- For example:
-		p = 2 3 1 4 5
-		d = 2 2 1 1 0
-		first, idx(5) = 5
-		so we put 5 into perm; perm = [5]
-		then, go to idx(4) = 4; since d[idx(4)] = 1, we put it to the left of 5 (which happens to be to the right of 4 in p); perm = [4, 5]
-		then, go to idx(3) = 2; since d[idx(3)] = 2, we put it to the left of 4 (since 4, 5 are larger than it in p); perm = [2, 4, 5]
-		then, go to idx(2) = 1; since d[idx(2)] = 2, we insert it to the right place in perm; perm = [2, 1, 4, 5]
-		then, go to idx(1) = 3; since d[idx(1)] = 1, we insert it to the right place in perm; perm = [2, 1, 4, 3, 5]
-		Think of perm as the correct ordering of the indices in q based on the values it holds.
-		That is number at index 5 should be largest, number at index 3 should be second largest,...
+   We are given a permutation p[1..n] and an array d[1..n].
+   We want to construct a permutation q[1..n] such that for every index i,
+
+       #{ j : j > i, p[j] > p[i], q[j] > q[i] } = d[i].
+
+   Let pos[x] be the index where p[pos[x]] = x.
+
+   We process values of p in decreasing order: n, n - 1, ..., 1.
+   Suppose we are currently processing value k, and let
+
+       i = pos[k].
+
+   At this moment, all indices already inserted correspond exactly to values
+   larger than k in p. Let A be the current list of inserted indices, ordered
+   by increasing q-value.
+
+   For the current index i, the only indices that can contribute to d[i] are
+
+       S_i = { j in A : j > i }.
+
+   These are exactly the indices j such that
+
+       j > i and p[j] > p[i].
+
+   Therefore, it is necessary that
+
+       d[i] <= |S_i|.
+
+   If d[i] > |S_i|, then no valid q exists.
+
+   Otherwise, we insert i into A so that exactly d[i] elements of S_i appear
+   after i in A.
+
+   More explicitly, let the positions of the elements of S_i inside A be
+
+       r_1 < r_2 < ... < r_m,
+
+   where m = |S_i|.
+
+   We insert i immediately before r_{m - d[i] + 1}.
+   If d[i] = 0, we insert i after r_m.
+
+   After this insertion, exactly d[i] indices j with j > i and p[j] > p[i]
+   are placed after i in A, which means exactly d[i] of them will satisfy
+   q[j] > q[i].
+
+   Since future inserted elements have smaller p-values, they can never affect
+   the already fixed condition for any processed index.
+
+   After all indices are inserted, A gives the increasing order of q-values.
+   That is, if
+
+       A = [a_1, a_2, ..., a_n],
+
+   then we assign
+
+       q[a_t] = t.
+
+   Example:
+
+       p = [2, 3, 1, 4, 5]
+       d = [2, 2, 1, 1, 0]
+
+       Process values in order 5, 4, 3, 2, 1.
+
+       pos[5] = 5:
+           A = [5]
+
+       pos[4] = 4:
+           S_4 = {5}, d[4] = 1
+           Insert 4 before 5:
+           A = [4, 5]
+
+       pos[3] = 2:
+           S_2 = {4, 5}, d[2] = 2
+           Insert 2 before both:
+           A = [2, 4, 5]
+
+       pos[2] = 1:
+           S_1 = {2, 4, 5}, d[1] = 2
+           Insert 1 so exactly two of them are after it:
+           A = [2, 1, 4, 5]
+
+       pos[1] = 3:
+           S_3 = {4, 5}, d[3] = 1
+           Insert 3 so exactly one of them is after it:
+           A = [2, 1, 4, 3, 5]
+
+       Therefore:
+           q[2] = 1
+           q[1] = 2
+           q[4] = 3
+           q[3] = 4
+           q[5] = 5
+
+       So q = [2, 1, 4, 3, 5].
 */
 
 package main
